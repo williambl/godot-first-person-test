@@ -1,9 +1,9 @@
 extends KinematicBody
 
-const GRAVITY = -24.8
+const GRAVITY = -40
 var vel = Vector3()
 const MAX_SPEED = 20
-const JUMP_SPEED = 18
+const JUMP_SPEED = 10
 const ACCEL = 4.5
 
 var dir = Vector3()
@@ -88,6 +88,7 @@ func process_movement(delta):
     vel.x = hvel.x
     vel.z = hvel.z
     vel = move_and_slide(vel, Vector3(0, 1, 0), 0.05, 4, deg2rad(MAX_SLOPE_ANGLE))
+    
     # ----------------------------------
 
 func _input(event):
