@@ -1,19 +1,20 @@
 extends KinematicBody
 
+const MAX_SPEED_WALKING = 20
+const MAX_SPEED_SPRINTING = 40
+const MAX_SPEED_CROUCHING = 10
+const MAX_SPEED_AIR = 10
+
 const GRAVITY = -40
-var vel = Vector3()
-const MAX_SPEED = 20
 const JUMP_SPEED = 10
+
 const ACCEL = 4.5
-
-var dir = Vector3()
-
 const DEACCEL= 16
+
 const MAX_SLOPE_ANGLE = 40
+const MOUSE_SENSITIVITY = 0.5
 
 var camera
-
-var MOUSE_SENSITIVITY = 0.5
 
 func _ready():
     camera = $Camera
@@ -29,7 +30,8 @@ func process_movement(delta):
 
     # ----------------------------------
     # Walking
-    dir = Vector3()
+    var dir = Vector3()
+    var vel = Vector3()
     var cam_xform = camera.get_global_transform()
 
     var input_movement_vector = Vector2()
@@ -55,6 +57,11 @@ func process_movement(delta):
         if Input.is_action_just_pressed("jump"):
             vel.y = JUMP_SPEED
     # ----------------------------------
+    
+    # ----------------------------------
+    # Sprinting and crouching
+    var is_sprinting = Input.is_action_pressed("sprint")
+    var is_crouching = Input.is_action_pressed("crouch")
 
     # ----------------------------------
     # Capturing/Freeing the cursor
@@ -69,6 +76,8 @@ func process_movement(delta):
     # Move
     dir.y = 0
     dir = dir.normalized()
+    
+    var max_speed = get_max_speed(is_sprinting, is_crouching)
 
     vel.y += delta * GRAVITY
 
@@ -76,7 +85,7 @@ func process_movement(delta):
     hvel.y = 0
 
     var target = dir
-    target *= MAX_SPEED
+    target *= max_speed
 
     var accel
     if dir.dot(hvel) > 0:
@@ -90,6 +99,15 @@ func process_movement(delta):
     vel = move_and_slide(vel, Vector3(0, 1, 0), 0.05, 4, deg2rad(MAX_SLOPE_ANGLE))
     
     # ----------------------------------
+
+func get_max_speed(is_sprinting, is_crouching):
+    if (not is_on_floor()):
+        return MAX_SPEED_AIR
+    if (is_crouching):
+        return MAX_SPEED_CROUCHING
+    if (is_sprinting):
+        return MAX_SPEED_SPRINTING
+    return MAX_SPEED_WALKING
 
 func _input(event):
     if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
