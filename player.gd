@@ -33,8 +33,12 @@ func _ready():
     # Tell Godot that we want to handle input
     set_process_input(true)
 
+func process_actions(delta):
+    pass
+
 func _physics_process(delta):
     process_movement(delta)
+    process_actions(delta)
 
 func process_movement(delta):
 
