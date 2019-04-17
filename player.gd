@@ -21,6 +21,8 @@ var ceiling_check
 
 var posture = 0  # 0 = stand, 1 = crouch
 
+var vel = Vector3()
+
 func _ready():
     camera = $Camera
     crouch_anim = $Crouch
@@ -39,7 +41,6 @@ func process_movement(delta):
     # ----------------------------------
     # Walking
     var dir = Vector3()
-    var vel = Vector3()
     var cam_xform = camera.get_global_transform()
 
     var input_movement_vector = Vector2()
