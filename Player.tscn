@@ -3,6 +3,7 @@
 [ext_resource path="res://player.gd" type="Script" id=1]
 
 [sub_resource type="CapsuleShape" id=1]
+height = 2.0
 
 [sub_resource type="BoxShape" id=2]
 extents = Vector3( 1, 0.254696, 1 )
@@ -17,10 +18,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.1 ),
+"times": PoolRealArray( 0, 0.2 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 1,
-"values": [ 1.0, 0.5 ]
+"values": [ 2.0, 0.5 ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath("Camera:translation")
@@ -32,7 +33,7 @@ tracks/1/keys = {
 "times": PoolRealArray( 0, 0.5 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Vector3( 0, 0.611349, -1.02387 ), Vector3( 0, 0.111, -1.024 ) ]
+"values": [ Vector3( 0, 1.7, -1.024 ), Vector3( 0, 0.111, -1.024 ) ]
 }
 tracks/2/type = "value"
 tracks/2/path = NodePath("BodyCollision:translation")
@@ -44,7 +45,7 @@ tracks/2/keys = {
 "times": PoolRealArray( 0, 0.5 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Vector3( 0, 0, 0 ), Vector3( 0, -0.25, 0 ) ]
+"values": [ Vector3( 0, 0.5, 0 ), Vector3( 0, -0.25, 0 ) ]
 }
 
 [node name="Player" type="KinematicBody"]
@@ -52,13 +53,13 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0 )
 script = ExtResource( 1 )
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.611349, -1.02387 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, -1.024 )
 keep_aspect = 0
 fov = 90.0
 far = 1000.0
 
 [node name="BodyCollision" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0 )
 shape = SubResource( 1 )
 
 [node name="FeetCollision" type="CollisionShape" parent="."]
