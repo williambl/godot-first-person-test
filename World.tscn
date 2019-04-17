@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://FPSCounter.gd" type="Script" id=1]
 [ext_resource path="res://Player.tscn" type="PackedScene" id=2]
@@ -18,6 +18,15 @@ size = Vector3( 2, 1, 5 )
 
 [sub_resource type="BoxShape" id=6]
 extents = Vector3( 1, 0.5, 2.5 )
+
+[sub_resource type="ProceduralSky" id=7]
+
+[sub_resource type="Environment" id=8]
+background_sky = SubResource( 7 )
+ambient_light_energy = 0.0
+tonemap_mode = 3
+ssao_quality = 2
+glow_enabled = true
 
 [node name="Spatial" type="Spatial"]
 
@@ -75,7 +84,7 @@ shape = SubResource( 4 )
 
 [node name="Cube4" type="MeshInstance" parent="."]
 editor/display_folded = true
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3.27145, 2.73061, -1.45131 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3.27145, 3.0798, -1.45131 )
 mesh = SubResource( 5 )
 material/0 = null
 
@@ -83,4 +92,12 @@ material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Cube4/StaticBody"]
 shape = SubResource( 6 )
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 8 )
+
+[node name="SpotLight" type="SpotLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.850668, 0.525704, 0, -0.525704, 0.850668, 0, 3.68122, 8.58634 )
+spot_range = 16.3956
+spot_angle = 69.0925
 
