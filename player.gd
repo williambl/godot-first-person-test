@@ -14,17 +14,25 @@ const DEACCEL= 16
 const MAX_SLOPE_ANGLE = 40
 const MOUSE_SENSITIVITY = 0.5
 
+
 var camera
+var crouch_anim
+var ceiling_check
+
+var posture = 0  # 0 = stand, 1 = crouch
 
 func _ready():
     camera = $Camera
+    crouch_anim = $Crouch
+    ceiling_check = $CeilingCheck
+    
     Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-    ## Tell Godot that we want to handle input
+    
+    # Tell Godot that we want to handle input
     set_process_input(true)
 
 func _physics_process(delta):
     process_movement(delta)
-
 
 func process_movement(delta):
 
@@ -61,7 +69,9 @@ func process_movement(delta):
     # ----------------------------------
     # Sprinting and crouching
     var is_sprinting = Input.is_action_pressed("sprint")
-    var is_crouching = Input.is_action_pressed("crouch")
+    if Input.is_action_just_pressed("crouch"):
+        print("crouching")
+        togglePosture()
 
     # ----------------------------------
     # Capturing/Freeing the cursor
@@ -77,7 +87,7 @@ func process_movement(delta):
     dir.y = 0
     dir = dir.normalized()
     
-    var max_speed = get_max_speed(is_sprinting, is_crouching)
+    var max_speed = get_max_speed(is_sprinting)
 
     vel.y += delta * GRAVITY
 
@@ -97,13 +107,12 @@ func process_movement(delta):
     vel.x = hvel.x
     vel.z = hvel.z
     vel = move_and_slide(vel, Vector3(0, 1, 0), 0.05, 4, deg2rad(MAX_SLOPE_ANGLE))
-    
     # ----------------------------------
 
-func get_max_speed(is_sprinting, is_crouching):
+func get_max_speed(is_sprinting):
     if (not is_on_floor()):
         return MAX_SPEED_AIR
-    if (is_crouching):
+    if (posture == 1):
         return MAX_SPEED_CROUCHING
     if (is_sprinting):
         return MAX_SPEED_SPRINTING
@@ -150,3 +159,25 @@ func mouse(event):
     ## handle the transformation of both together
     camera.set_rotation(look_updown_rotation(event.relative.y*MOUSE_SENSITIVITY / -200))
     # ----------------------------------
+    
+func setPosture(posture_in):
+    if posture_in == 0 and ceiling_check.is_colliding():
+        return
+
+    print(posture)
+    print(posture_in)
+    posture = posture_in
+    
+    if posture == 0:
+        crouch_anim.play_backwards("Crouch")
+        
+    if posture == 1:
+        crouch_anim.play("Crouch")
+
+func togglePosture():
+    
+    print("toggling, posture currently: " + str(posture))
+    if posture == 0:
+        setPosture(1)
+    elif posture == 1:
+        setPosture(0)
