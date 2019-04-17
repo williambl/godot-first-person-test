@@ -1,60 +1,133 @@
 extends KinematicBody
 
-onready var camera = self.get_child(0)
+const GRAVITY = -24.8
+var vel = Vector3()
+const MAX_SPEED = 20
+const JUMP_SPEED = 18
+const ACCEL = 4.5
+
+var dir = Vector3()
+
+const DEACCEL= 16
+const MAX_SLOPE_ANGLE = 40
+
+var camera
+
+var MOUSE_SENSITIVITY = 0.5
 
 func _ready():
-	## Tell Godot that we want to handle input
-	set_process_input(true)
+    camera = $Camera
+    Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+    ## Tell Godot that we want to handle input
+    set_process_input(true)
 
-func look_updown_rotation(rotation = 0):
-	"""
-	Get the new rotation for looking up and down
-	"""
-	var toReturn = camera.get_rotation() + Vector3(rotation, 0, 0)
+func _physics_process(delta):
+    process_movement(delta)
 
-	##
-	## We don't want the player to be able to bend over backwards
-	## neither to be able to look under their arse.
-	## Here we'll clamp the vertical look to 90° up and down
-	toReturn.x = clamp(toReturn.x, PI / -2, PI / 2)
 
-	return toReturn
+func process_movement(delta):
 
-func look_leftright_rotation(rotation = 0):
-	"""
-	Get the new rotation for looking left and right
-	"""
-	return self.get_rotation() + Vector3(0, rotation, 0)
+    # ----------------------------------
+    # Walking
+    dir = Vector3()
+    var cam_xform = camera.get_global_transform()
 
-func mouse(event):
-	"""
-	First person camera controls
-	"""
-	##
-	## We'll use the parent node "Yaw" to set our left-right rotation
-	## This prevents us from adding the x-rotation to the y-rotation
-	## which would result in a kind of flight-simulator camera
-	self.set_rotation(look_leftright_rotation(event.relative.x / -200))
+    var input_movement_vector = Vector2()
 
-	##
-	## Now we can simply set our y-rotation for the camera, and let godot
-	## handle the transformation of both together
-	camera.set_rotation(look_updown_rotation(event.relative.y / -200))
+    if Input.is_action_pressed("move_forward"):
+        input_movement_vector.y += 1
+    if Input.is_action_pressed("move_back"):
+        input_movement_vector.y -= 1
+    if Input.is_action_pressed("move_left"):
+        input_movement_vector.x -= 1
+    if Input.is_action_pressed("move_right"):
+        input_movement_vector.x += 1
+
+    input_movement_vector = input_movement_vector.normalized()
+
+    dir += -cam_xform.basis.z.normalized() * input_movement_vector.y
+    dir += cam_xform.basis.x.normalized() * input_movement_vector.x
+    # ----------------------------------
+
+    # ----------------------------------
+    # Jumping
+    if is_on_floor():
+        if Input.is_action_just_pressed("jump"):
+            vel.y = JUMP_SPEED
+    # ----------------------------------
+
+    # ----------------------------------
+    # Capturing/Freeing the cursor
+    if Input.is_action_just_pressed("ui_cancel"):
+        if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
+            Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+        else:
+            Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+    # ----------------------------------
+    
+    # ----------------------------------
+    # Move
+    dir.y = 0
+    dir = dir.normalized()
+
+    vel.y += delta * GRAVITY
+
+    var hvel = vel
+    hvel.y = 0
+
+    var target = dir
+    target *= MAX_SPEED
+
+    var accel
+    if dir.dot(hvel) > 0:
+        accel = ACCEL
+    else:
+        accel = DEACCEL
+
+    hvel = hvel.linear_interpolate(target, accel * delta)
+    vel.x = hvel.x
+    vel.z = hvel.z
+    vel = move_and_slide(vel, Vector3(0, 1, 0), 0.05, 4, deg2rad(MAX_SLOPE_ANGLE))
+    # ----------------------------------
 
 func _input(event):
-	##
-	## We'll only process mouse motion events
-	if event is InputEventMouseMotion:
-		return mouse(event)
+    if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+        mouse(event)
 
-func _enter_tree():
-	"""
-	Hide the mouse when we start
-	"""
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+func look_updown_rotation(rotation = 0):
+    """
+    Get the new rotation for looking up and down
+    """
+    
+    var toReturn = camera.get_rotation() + Vector3(rotation, 0, 0)
+    # ----------------------------------
+    # We don't want the player to be able to bend over backwards
+    # neither to be able to look under their arse.
+    # Here we'll clamp the vertical look to 90° up and down
+    toReturn.x = clamp(toReturn.x, PI / -2, PI / 2)
+    # ----------------------------------
 
-func _leave_tree():
-	"""
-	Show the mouse when we leave
-	"""
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+    return toReturn
+
+func look_leftright_rotation(rotation = 0):
+    """
+    Get the new rotation for looking left and right
+    """
+    return self.get_rotation() + Vector3(0, rotation, 0)
+
+func mouse(event):
+    """
+    First person camera controls
+    """
+    # ----------------------------------
+    ## We'll use the parent node "self" to set our left-right rotation
+    ## This prevents us from adding the x-rotation to the y-rotation
+    ## which would result in a kind of flight-simulator camera
+    self.set_rotation(look_leftright_rotation(event.relative.x*MOUSE_SENSITIVITY / -200))
+    # ----------------------------------
+    
+    # ----------------------------------
+    ## Now we can simply set our y-rotation for the camera, and let godot
+    ## handle the transformation of both together
+    camera.set_rotation(look_updown_rotation(event.relative.y*MOUSE_SENSITIVITY / -200))
+    # ----------------------------------
