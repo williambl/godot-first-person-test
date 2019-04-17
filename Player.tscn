@@ -63,7 +63,7 @@ transform = Transform( 1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0 )
 shape = SubResource( 1 )
 
 [node name="FeetCollision" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.924255, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.727827, 0 )
 shape = SubResource( 2 )
 
 [node name="Crouch" type="AnimationPlayer" parent="."]
@@ -72,5 +72,5 @@ anims/Crouch = SubResource( 3 )
 [node name="CeilingCheck" type="RayCast" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.07952, 0 )
 enabled = true
-cast_to = Vector3( 0, 1, 0 )
+cast_to = Vector3( 0, 1.51, 0 )
 
