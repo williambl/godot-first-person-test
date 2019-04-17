@@ -1,12 +1,12 @@
 extends KinematicBody
 
-const MAX_SPEED_WALKING = 20
-const MAX_SPEED_SPRINTING = 40
-const MAX_SPEED_CROUCHING = 10
-const MAX_SPEED_AIR = 10
+const MAX_SPEED_WALKING = 10
+const MAX_SPEED_SPRINTING = 30
+const MAX_SPEED_CROUCHING = 5
+const MAX_SPEED_AIR = 12
 
 const GRAVITY = -40
-const JUMP_SPEED = 10
+const JUMP_SPEED = 15
 
 const ACCEL = 4.5
 const DEACCEL= 16

@@ -63,7 +63,7 @@ transform = Transform( 1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.5, 0 )
 shape = SubResource( 1 )
 
 [node name="FeetCollision" type="CollisionShape" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.727827, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.05873, 0 )
 shape = SubResource( 2 )
 
 [node name="Crouch" type="AnimationPlayer" parent="."]
